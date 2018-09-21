@@ -4,6 +4,6 @@ set REPORT=lib\org.jacoco.examples-0.7.7.jar
 set AGENT=lib\org.jacoco.agent-0.7.7.jar
 set JUNIT=lib\org.junit4-4.3.1.jar
 @echo "Running unittests ..."
-%JDK_HOME%/bin/java.exe -javaagent:%AGENT% -cp %JUNIT%;bin org.junit.runner.JUnitCore ltu.PaymentTest
+%JDK_HOME%/bin/java.exe -javaagent:%AGENT% -cp %JUNIT%;bin org.junit.runner.JUnitCore ltu.Tests.PaymentTest
 @echo "Generating report ..."
 %JDK_HOME%/bin/java.exe -jar %REPORT% .

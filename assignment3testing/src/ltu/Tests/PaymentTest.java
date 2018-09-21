@@ -1,4 +1,4 @@
-package ltu;
+package ltu.Tests;
 
 import static org.junit.Assert.*;
 
