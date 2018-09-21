@@ -43,4 +43,29 @@ public class PaymentTest
         assertNotNull(payment);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputIdTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount(null, 0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputAmountTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", -1, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputStudyRateTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", 0, -1, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputCompletionTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", 0, 0, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidPersonTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("", 0, 0, 0);
+    }
+
 }
