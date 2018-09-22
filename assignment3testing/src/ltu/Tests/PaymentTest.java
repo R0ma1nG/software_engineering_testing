@@ -9,6 +9,7 @@ import ltu.PaymentImpl;
 import org.junit.*;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class PaymentTest
 {
@@ -25,7 +26,11 @@ public class PaymentTest
 
     @Before
     public void init() throws IOException {
-        ICalendar calendar = getCalendar();
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.JANUARY, 10);
+            return cal.getTime();
+        };
         payment = new PaymentImpl(calendar);
     }
 
@@ -66,6 +71,11 @@ public class PaymentTest
     @Test(expected = IllegalArgumentException.class)
     public void InvalidPersonTest() throws IllegalArgumentException {
         payment.getMonthlyAmount("", 0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidPersonTooLongIdTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("azertyuioazertyuioar", 0, 0, 0);
     }
 
 }
