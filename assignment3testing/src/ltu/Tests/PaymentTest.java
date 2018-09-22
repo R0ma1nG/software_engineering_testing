@@ -48,7 +48,6 @@ public class PaymentTest
         assertNotNull(payment);
     }
 
-
     @Test
     public void ageBetween20And47LowIncomeStudyRate100CompletionHighTest() {
         int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 85813, 100, 50);
@@ -154,7 +153,56 @@ public class PaymentTest
     @Test
     public void ageBetween47And56HighIncomeStudyRate50CompletionLowTest() {
         int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 128723, 50, 0);
-        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+        assertEquals(ZERO_SUBSIDY + ZERO_LOAN, monthlyAmount);
+    }
+
+    @Test
+    public void nextPaymentDaySundayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.JANUARY, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160129";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
+    @Test
+    public void nextPaymentDaySaturdayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.APRIL, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160429";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
+    @Test
+    public void nextPaymentDayWeekdayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.FEBRUARY, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160229";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidInputIdTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount(null, 0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidInputAmountTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", -1, 0, 0);
     }
 
     @Test
@@ -171,23 +219,70 @@ public class PaymentTest
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void InvalidInputStudyRateTest() throws IllegalArgumentException {
+    public void invalidInputStudyRateTest() throws IllegalArgumentException {
         payment.getMonthlyAmount("19950315-1234", 0, -1, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void InvalidInputCompletionTest() throws IllegalArgumentException {
+    public void invalidInputCompletionTest() throws IllegalArgumentException {
         payment.getMonthlyAmount("19950315-1234", 0, 0, -1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void InvalidPersonTest() throws IllegalArgumentException {
+    public void invalidPersonTest() throws IllegalArgumentException {
         payment.getMonthlyAmount("", 0, 0, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void InvalidPersonTooLongIdTest() throws IllegalArgumentException {
+    public void invalidPersonTooLongIdTest() throws IllegalArgumentException {
         payment.getMonthlyAmount("azertyuioazertyuioar", 0, 0, 0);
     }
 
+    @Test
+    public void ageBelow20Test() {
+        int amount = 0;
+        String personId = "19970425-1234";
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 100, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 100, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 100, 50));
+    }
+
+    @Test
+    public void ageAbove56Test() {
+        int amount = 0;
+        String personId = "19590101-1234";
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 0, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 0, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 50, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 50, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 100, 0));
+        assertEquals(amount, payment.getMonthlyAmount(personId, 0, 100, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, FULLTIME_INCOME, 100, 50));
+        assertEquals(amount, payment.getMonthlyAmount(personId, PARTTIME_INCOME, 100, 50));
+    }
 }
