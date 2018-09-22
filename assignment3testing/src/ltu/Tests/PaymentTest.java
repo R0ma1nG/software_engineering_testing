@@ -48,6 +48,45 @@ public class PaymentTest
         assertNotNull(payment);
     }
 
+    @Test
+    public void nextPaymentDaySundayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.JANUARY, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160129";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
+    @Test
+    public void nextPaymentDaySaturdayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.APRIL, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160429";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
+    @Test
+    public void nextPaymentDayWeekdayLastDayTest() throws IOException {
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.FEBRUARY, 10);
+            return cal.getTime();
+        };
+        PaymentImpl payment = new PaymentImpl(calendar);
+        String result = "20160229";
+        String day = payment.getNextPaymentDay();
+        assertEquals(result, day);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void invalidInputIdTest() throws IllegalArgumentException {
         payment.getMonthlyAmount(null, 0, 0, 0);
