@@ -10,8 +10,6 @@ import org.junit.*;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class PaymentTest
 {
@@ -25,11 +23,14 @@ public class PaymentTest
     private final int PARTTIME_INCOME = 128722;
 
     private PaymentImpl payment;
-    private ICalendar calendar;
 
     @Before
     public void init() throws IOException {
-        calendar = getCalendar();
+        ICalendar calendar = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.set(2016, Calendar.JANUARY, 10);
+            return cal.getTime();
+        };
         payment = new PaymentImpl(calendar);
     }
 
@@ -47,21 +48,146 @@ public class PaymentTest
         assertNotNull(payment);
     }
 
+
     @Test
-    public void ageIsValid() throws IOException{
-        Date date = calendar.getDate();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int birthDate = year - 18;
+    public void ageBetween20And47LowIncomeStudyRate100CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 85813, 100, 50);
+        assertEquals(FULL_LOAN+FULL_SUBSIDY , monthlyAmount);
+    }
 
-        System.out.println(calendar);
-        System.out.println(calendar.getDate());
-        System.out.println(birthDate);
+    @Test
+    public void ageBetween20And47HighIncomeStudyRate100CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 85814, 100, 50);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
 
-        //String birthYear = birthDate;
+    @Test
+    public void ageBetween20And47HighIncomeStudyRate50CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 128723, 50, 50);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
 
-        //assertEquals(0, payment.getMonthlyAmount());
+    @Test
+    public void ageBetween20And47LowIncomeStudyRate50CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 128722, 50, 50);
+        assertEquals(HALF_LOAN+HALF_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47LowIncomeStudyRate0CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 50000, 0, 50);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47LowIncomeStudyRate100CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 85813, 100, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47HighIncomeStudyRate100CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 85814, 100, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47HighIncomeStudyRate50CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 128723, 50, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47LowIncomeStudyRate50CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 128722, 50, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween20And47LowIncomeStudyRate0CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19861125-1234", 50000, 0, 0);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate100CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 85813, 100, 50);
+        assertEquals(ZERO_LOAN+FULL_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56HighIncomeStudyRate100CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 85814, 100, 50);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56HighIncomeStudyRate50CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 128723, 50, 50);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate50CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 128722, 50, 50);
+        assertEquals(ZERO_LOAN+HALF_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate0CompletionHighTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 50000, 0, 50);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate100CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 85813, 100, 0);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56HighIncomeStudyRate100CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 85814, 100, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56HighIncomeStudyRate50CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 128723, 50, 0);
+        assertEquals(ZERO_SUBSIDY+ZERO_LOAN , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate50CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 128722, 50, 0);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+    @Test
+    public void ageBetween47And56LowIncomeStudyRate0CompletionLowTest() {
+        int monthlyAmount = payment.getMonthlyAmount("19691125-1234", 50000, 0, 0);
+        assertEquals(ZERO_LOAN+ZERO_SUBSIDY , monthlyAmount);
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputStudyRateTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", 0, -1, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidInputCompletionTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("19950315-1234", 0, 0, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidPersonTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("", 0, 0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void InvalidPersonTooLongIdTest() throws IllegalArgumentException {
+        payment.getMonthlyAmount("azertyuioazertyuioar", 0, 0, 0);
     }
 
 }
